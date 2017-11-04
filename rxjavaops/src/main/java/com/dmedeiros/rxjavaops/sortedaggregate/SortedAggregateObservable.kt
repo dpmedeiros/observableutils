@@ -7,8 +7,8 @@ import rx.Subscriber
 class SortedAggregateObservable<T> private constructor(private val observables: Array<out Observable<T>>,
                                                        private val comparator: Comparator<T>) {
 
-    private val subscribers = mutableListOf<SortedAggregateSubscriber>()
-    private val accumulator = mutableListOf<T>()
+    private val subscribers = ArrayList<SortedAggregateSubscriber>(initialCapacity = observables.size)
+    private val accumulator = ArrayList<T>(initialCapacity = observables.size)
 
     private open inner class SortedAggregateSubscriber
     constructor(val parentEmitter: Emitter<T>) : Subscriber<T>() {
