@@ -22,12 +22,8 @@ class SortedAggregateObservable<T> private constructor(private val observables: 
     private val accumulator = ArrayList<Item<T>>(observables.size)
 
     private val emitter = { emitter: Emitter<T> ->
-        if (observables.isEmpty()) {
-            emitter.onCompleted()
-        } else {
-            subscribers += createSubscribers(emitter)
-            subscribeToObservables()
-        }
+        subscribers += createSubscribers(emitter)
+        subscribeToObservables()
     }
 
     private fun createSubscribers(emitter: Emitter<T>) = observables.map { SortedAggregateSubscriber(emitter) }.toList()
@@ -35,7 +31,7 @@ class SortedAggregateObservable<T> private constructor(private val observables: 
     private fun subscribeToObservables() =
             observables.forEachIndexed { i, observable -> observable.onBackpressureBuffer().subscribe(subscribers[i]) }
 
-    private open inner class SortedAggregateSubscriber
+    private inner class SortedAggregateSubscriber
     constructor(val parentEmitter: Emitter<T>) : Subscriber<T>() {
 
         override fun onStart() {
